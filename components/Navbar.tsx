@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ShoppingCart, Menu, X, Zap } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCartStore } from "@/lib/store";
 import CartDrawer from "./CartDrawer";
 import { UserButton, SignInButton, useUser } from "@clerk/nextjs";
@@ -10,7 +10,13 @@ import { UserButton, SignInButton, useUser } from "@clerk/nextjs";
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const getTotalItems = useCartStore((state) => state.getTotalItems);
+  const { isSignedIn } = useUser();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <>
@@ -38,18 +44,43 @@ export default function Navbar() {
 
           {/* Right side */}
           <div className="flex items-center gap-4">
+            {/* Cart */}
             <button
               onClick={() => setCartOpen(true)}
               className="relative p-2 hover:text-lime-400 transition"
             >
               <ShoppingCart className="w-5 h-5" />
-              {getTotalItems() > 0 && (
+              {mounted && getTotalItems() > 0 && (
                 <span className="absolute -top-1 -right-1 bg-lime-400 text-black text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
                   {getTotalItems()}
                 </span>
               )}
             </button>
 
+            {/* Auth */}
+            {mounted && (
+              <>
+                {isSignedIn ? (
+                  <div className="flex items-center gap-3">
+                    <Link
+                      href="/admin"
+                      className="hidden md:block text-xs border border-lime-400/30 text-lime-400 px-3 py-1.5 rounded-full hover:bg-lime-400 hover:text-black transition"
+                    >
+                      Admin
+                    </Link>
+                    <UserButton afterSignOutUrl="/" />
+                  </div>
+                ) : (
+                  <SignInButton mode="modal">
+                    <button className="text-sm border border-white/20 px-4 py-1.5 rounded-full hover:border-lime-400 hover:text-lime-400 transition">
+                      Sign In
+                    </button>
+                  </SignInButton>
+                )}
+              </>
+            )}
+
+            {/* Mobile menu button */}
             <button className="md:hidden p-2" onClick={() => setMenuOpen(!menuOpen)}>
               {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -66,6 +97,9 @@ export default function Navbar() {
             <Link href="/products?category=accessories" onClick={() => setMenuOpen(false)} className="hover:text-white transition">Accessories</Link>
             <Link href="/about" onClick={() => setMenuOpen(false)} className="hover:text-white transition">About</Link>
             <Link href="/contact" onClick={() => setMenuOpen(false)} className="hover:text-white transition">Contact</Link>
+            {isSignedIn && (
+              <Link href="/admin" onClick={() => setMenuOpen(false)} className="text-lime-400 hover:text-lime-300 transition">Admin Dashboard</Link>
+            )}
           </div>
         )}
       </nav>
