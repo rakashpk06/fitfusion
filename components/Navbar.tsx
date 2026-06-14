@@ -5,6 +5,7 @@ import { ShoppingCart, Menu, X, Zap } from "lucide-react";
 import { useState } from "react";
 import { useCartStore } from "@/lib/store";
 import CartDrawer from "./CartDrawer";
+import { UserButton, SignInButton, useUser } from "@clerk/nextjs";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
