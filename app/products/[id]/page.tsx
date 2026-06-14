@@ -1,5 +1,9 @@
+"use client";
+
 import Navbar from "@/components/Navbar";
 import Link from "next/link";
+import { useState, use } from "react";
+import { useCartStore } from "@/lib/store";
 
 const allProducts = [
   { id: "1", name: "FlexPro Compression Tee", price: 29.99, category: "Tops", image: "https://images.unsplash.com/photo-1581655353564-df123a1eb820?w=800&q=80", badge: "Best Seller", description: "Built for high-intensity training, the FlexPro Compression Tee offers superior muscle support and moisture-wicking fabric to keep you dry and focused.", sizes: ["XS", "S", "M", "L", "XL"], rating: 4.8, reviews: 124 },
@@ -13,13 +17,33 @@ const allProducts = [
   { id: "9", name: "ProLift Gym Bag", price: 59.99, category: "Accessories", image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&q=80", badge: "New", description: "Spacious 40L gym bag with separate wet/dry compartment, shoe pocket, and laptop sleeve. Built for the serious athlete on the go.", sizes: ["One Size"], rating: 4.9, reviews: 112 },
 ];
 
-export default async function ProductDetailPage({
+export default function ProductDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const { id } = use(params);
   const product = allProducts.find((p) => p.id === id);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [added, setAdded] = useState(false);
+  const addItem = useCartStore((state) => state.addItem);
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      alert("Please select a size first!");
+      return;
+    }
+    addItem({
+      id: product!.id,
+      name: product!.name,
+      price: product!.price,
+      image: product!.image,
+      size: selectedSize,
+      quantity: 1,
+    });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
 
   if (!product) {
     return (
@@ -97,18 +121,33 @@ export default async function ProductDetailPage({
                 {product.sizes.map((size) => (
                   <button
                     key={size}
-                    className="px-4 py-2 border border-white/20 rounded-lg text-sm hover:border-lime-400 hover:text-lime-400 transition"
+                    onClick={() => setSelectedSize(size)}
+                    className={`px-4 py-2 border rounded-lg text-sm transition ${
+                      selectedSize === size
+                        ? "border-lime-400 text-lime-400 bg-lime-400/10"
+                        : "border-white/20 hover:border-lime-400 hover:text-lime-400"
+                    }`}
                   >
                     {size}
                   </button>
                 ))}
               </div>
+              {!selectedSize && (
+                <p className="text-white/30 text-xs mt-2">Please select a size</p>
+              )}
             </div>
 
             {/* Buttons */}
             <div className="flex items-center gap-4">
-              <button className="flex-1 bg-lime-400 text-black font-bold py-4 rounded-full hover:bg-lime-300 transition text-sm tracking-wide">
-                ADD TO CART
+              <button
+                onClick={handleAddToCart}
+                className={`flex-1 font-bold py-4 rounded-full transition text-sm tracking-wide ${
+                  added
+                    ? "bg-green-500 text-white"
+                    : "bg-lime-400 text-black hover:bg-lime-300"
+                }`}
+              >
+                {added ? "✓ ADDED TO CART!" : "ADD TO CART"}
               </button>
               <button className="p-4 border border-white/20 rounded-full hover:border-lime-400 transition text-xl">
                 ♡
