@@ -31,6 +31,8 @@ export default function Navbar() {
             <Link href="/products?category=bottoms" className="hover:text-white transition">Bottoms</Link>
             <Link href="/products?category=footwear" className="hover:text-white transition">Footwear</Link>
             <Link href="/products?category=accessories" className="hover:text-white transition">Accessories</Link>
+            <Link href="/about" className="hover:text-white transition">About</Link>
+            <Link href="/contact" className="hover:text-white transition">Contact</Link>
           </div>
 
           {/* Right side */}
@@ -61,6 +63,8 @@ export default function Navbar() {
             <Link href="/products?category=bottoms" onClick={() => setMenuOpen(false)} className="hover:text-white transition">Bottoms</Link>
             <Link href="/products?category=footwear" onClick={() => setMenuOpen(false)} className="hover:text-white transition">Footwear</Link>
             <Link href="/products?category=accessories" onClick={() => setMenuOpen(false)} className="hover:text-white transition">Accessories</Link>
+            <Link href="/about" onClick={() => setMenuOpen(false)} className="hover:text-white transition">About</Link>
+            <Link href="/contact" onClick={() => setMenuOpen(false)} className="hover:text-white transition">Contact</Link>
           </div>
         )}
       </nav>
